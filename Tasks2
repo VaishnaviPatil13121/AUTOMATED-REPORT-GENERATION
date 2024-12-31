@@ -1,0 +1,60 @@
+import pandas as pd
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+# Sample data for demonstration (or load from a file)
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'Diana'],
+    'Age': [25, 30, 35, 40],
+    'Department': ['HR', 'Finance', 'IT', 'Marketing'],
+    'Salary': [50000, 60000, 70000, 80000]
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# Calculate basic statistics
+average_age = df['Age'].mean()
+average_salary = df['Salary'].mean()
+
+# Generate PDF report
+def generate_pdf_report(dataframe, filename="Report.pdf"):
+    c = canvas.Canvas(filename, pagesize=letter)
+    width, height = letter
+
+    # Title
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(200, height - 50, "Employee Data Report")
+
+    # Table header
+    c.setFont("Helvetica-Bold", 12)
+    x_offset = 50
+    y_offset = height - 100
+    c.drawString(x_offset, y_offset, "Name")
+    c.drawString(x_offset + 100, y_offset, "Age")
+    c.drawString(x_offset + 150, y_offset, "Department")
+    c.drawString(x_offset + 250, y_offset, "Salary")
+
+    # Table rows
+    c.setFont("Helvetica", 12)
+    y_offset -= 20
+    for _, row in dataframe.iterrows():
+        c.drawString(x_offset, y_offset, str(row['Name']))
+        c.drawString(x_offset + 100, y_offset, str(row['Age']))
+        c.drawString(x_offset + 150, y_offset, str(row['Department']))
+        c.drawString(x_offset + 250, y_offset, f"${row['Salary']}")
+        y_offset -= 20
+
+    # Summary
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(50, y_offset - 40, "Summary:")
+    c.setFont("Helvetica", 12)
+    c.drawString(50, y_offset - 60, f"Average Age: {average_age:.2f}")
+    c.drawString(50, y_offset - 80, f"Average Salary: ${average_salary:.2f}")
+
+    # Save PDF
+    c.save()
+
+# Generate the report
+generate_pdf_report(df)
+print("PDF report generated successfully as 'Report.pdf'.")
